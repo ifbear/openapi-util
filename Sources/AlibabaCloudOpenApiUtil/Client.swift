@@ -359,10 +359,9 @@ open class Client {
             result.append(sep)
             result.append(key.urlEncode())
             result.append("=")
-            if query[key] is String, let value = (query[key] as? String)?.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed), value.isEmpty == false {
+            if query[key] is String, let value = (query[key] as? String)?.urlEncode(), value.isEmpty == false {
                 result.append(value)
             }
-            
 //            if query[key] is String && !(query[key] as! String).isEmpty
 //                || (!(query[key] is String) && query[key] != nil) {
 //                result.append("\(query[key] ?? "")")
