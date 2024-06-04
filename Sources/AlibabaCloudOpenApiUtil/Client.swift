@@ -317,7 +317,7 @@ open class Client {
         stringToSign.append(payload ?? "")
         let hex: String = hexEncode(hash(stringToSign.toBytes(), signatureAlgorithm))
         stringToSign = "\(signatureAlgorithm!)\n\(hex)"
-        let byte: [UInt8] = try! HMAC(key: accessKeySecret ?? "", variant: .sha256).authenticate(stringToSign.bytes)
+        let byte: [UInt8] = try! HMAC(key: accessKeySecret ?? "", variant: .sha2(.sha256)).authenticate(stringToSign.bytes)
         let signature: String = hexEncode(byte)
         return "\(signatureAlgorithm!) Credential=\(acesskey!),SignedHeaders=\(signedHeaders.joined(separator: ";")),Signature=\(signature)"
     }
@@ -359,10 +359,14 @@ open class Client {
             result.append(sep)
             result.append(key.urlEncode())
             result.append("=")
-            if query[key] is String && !(query[key] as! String).isEmpty
-                || (!(query[key] is String) && query[key] != nil) {
-                result.append("\(query[key] ?? "")")
+            if query[key] is String, let value = (query[key] as? String)?.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed), value.isEmpty == false {
+                result.append(value)
             }
+            
+//            if query[key] is String && !(query[key] as! String).isEmpty
+//                || (!(query[key] is String) && query[key] != nil) {
+//                result.append("\(query[key] ?? "")")
+//            }
             sep = SEPARATOR
         }
         return result
